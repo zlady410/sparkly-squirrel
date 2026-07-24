@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Sparkly Squirrel" />
+  <title>Sparkly Squirrel</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --purple-dark: #4b176f;
+      --purple-mid: #8a3db6;
+      --purple-light: #d59bf0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
+
+    body {
+      overflow: hidden;
+      background: #fff;
+      color: var(--purple-dark);
+      font-family: "Cormorant Garamond", Georgia, serif;
+    }
+
+    .page {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+      padding: 32px;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .logo {
+      width: min(42vw, 360px);
+      max-height: 48vh;
+      object-fit: contain;
+      display: block;
+    }
+
+    .tagline {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 3.2rem);
+      line-height: 1.05;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      background: linear-gradient(90deg, var(--purple-dark), var(--purple-mid), var(--purple-light), var(--purple-mid));
+      background-size: 220% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 7s linear infinite;
+    }
+
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .sparkle {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      color: var(--c);
+      font-family: Georgia, serif;
+      font-size: var(--s);
+      opacity: .08;
+      transform: translate(-50%, -50%) scale(.7) rotate(var(--r));
+      animation: twinkle var(--d) ease-in-out var(--delay) infinite;
+      text-shadow: 0 0 12px rgba(126, 56, 173, .18);
+      user-select: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% {
+        opacity: .05;
+        transform: translate(-50%, -50%) scale(.65) rotate(var(--r));
+      }
+      50% {
+        opacity: .75;
+        transform: translate(-50%, -50%) scale(1.18) rotate(calc(var(--r) + 12deg));
+      }
+    }
+
+    @keyframes shimmer {
+      to { background-position: 220% center; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .sparkle, .tagline { animation: none; }
+      .sparkle { opacity: .35; }
+    }
+
+    @media (max-width: 600px) {
+      .logo { width: min(72vw, 320px); }
+      .content { gap: 12px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="sparkles" aria-hidden="true"></div>
+
+    <section class="content" aria-label="Sparkly Squirrel">
+      <img class="logo" src="squirrel.png" alt="Sparkly Squirrel logo">
+      <h1 class="tagline">Every big idea starts with a little sparkle.</h1>
+    </section>
+  </main>
+
+  <script>
+    const field = document.querySelector(".sparkles");
+    const symbols = ["✦", "✧", "⋆", "✶", "✷", "·"];
+    const colors = ["#4b176f", "#6f2a91", "#8a3db6", "#aa67cf", "#d59bf0"];
+
+    // Deterministic placement so it looks consistent each visit.
+    const positions = [
+      [7,12],[18,8],[31,16],[45,7],[62,14],[78,9],[91,18],
+      [10,31],[24,27],[39,35],[55,25],[70,33],[86,29],
+      [4,51],[17,48],[34,55],[50,44],[66,53],[82,47],[95,57],
+      [9,72],[23,66],[38,76],[54,69],[69,78],[87,70],
+      [15,91],[42,87],[72,92],[93,85]
+    ];
+
+    positions.forEach(([x,y], i) => {
+      const sparkle = document.createElement("span");
+      sparkle.className = "sparkle";
+      sparkle.textContent = symbols[i % symbols.length];
+      sparkle.style.setProperty("--x", `${x}%`);
+      sparkle.style.setProperty("--y", `${y}%`);
+      sparkle.style.setProperty("--s", `${12 + (i * 7) % 24}px`);
+      sparkle.style.setProperty("--c", colors[i % colors.length]);
+      sparkle.style.setProperty("--d", `${2.8 + (i % 7) * .45}s`);
+      sparkle.style.setProperty("--delay", `${-(i % 9) * .37}s`);
+      sparkle.style.setProperty("--r", `${(i * 23) % 90 - 45}deg`);
+      field.appendChild(sparkle);
+    });
+  </script>
+</body>
+</html>
